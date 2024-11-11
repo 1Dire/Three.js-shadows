@@ -31,6 +31,15 @@ gui.add(directionalLight.position, 'y').min(- 5).max(5).step(0.001)
 gui.add(directionalLight.position, 'z').min(- 5).max(5).step(0.001)
 scene.add(directionalLight)
 
+directionalLight.castShadow = true
+directionalLight.shadow.mapSize.width = 1024 
+directionalLight.shadow.mapSize.height = 1024
+
+directionalLight.shadow.camera.near = 1
+directionalLight.shadow.camera.far = 6
+
+const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
+scene.add(directionalLightCameraHelper)
 /**
  * Materials
  */
@@ -47,12 +56,19 @@ const sphere = new THREE.Mesh(
     material
 )
 
+ // sphere 메쉬가 그림자를 드리울 수 있도록 설정하는 코드
+sphere.castShadow = true
+
+
 const plane = new THREE.Mesh(
     new THREE.PlaneGeometry(5, 5),
     material
 )
 plane.rotation.x = - Math.PI * 0.5
 plane.position.y = - 0.5
+
+/// plane 메쉬가 다른 객체의 그림자를 받을 수 있도록 설정
+plane.receiveShadow = true  
 
 scene.add(sphere, plane)
 
@@ -101,6 +117,7 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.shadowMap.enabled = true  // 그림자 맵을 활성화
 
 /**
  * Animate
